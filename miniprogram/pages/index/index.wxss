@@ -1,62 +1,692 @@
-/**index.wxss**/
 page {
+  width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.scrollarea {
-  flex: 1;
-  overflow-y: hidden;
+  overflow: hidden;
+  background: #ffffff;
+  color: #3e302d;
+  font-family: "STSong", "Songti SC", SimSun, serif;
 }
 
-.userinfo {
+button {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  line-height: 1;
+  font: inherit;
+  color: inherit;
+}
+
+button::after {
+  border: 0;
+}
+
+.invitation-swiper,
+.screen {
+  width: 100%;
+  height: 100vh;
+}
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.screen-decoration {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.screen-decoration--top-right {
+  top: 10vh;
+  right: 0;
+  width: 161rpx;
+}
+
+.screen-decoration--bottom-left {
+  bottom: calc(100vh - 10vh - 1334rpx);
+  left: 0;
+  width: 280rpx;
+}
+
+.screen-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 44rpx calc(132rpx + env(safe-area-inset-bottom));
+}
+
+.cover-scroll {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-content {
+  position: relative;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.cover-top-space {
+  height: 10vh;
+  background: #ffffff;
+}
+
+.cover-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.next-cue {
+  position: absolute;
+  left: 50%;
+  bottom: calc(22rpx + env(safe-area-inset-bottom));
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #aaa;
-  width: 80%;
+  transform: translateX(-50%);
+  color: rgba(31, 41, 51, 0.76);
+  text-align: center;
 }
 
-.userinfo-avatar {
-  overflow: hidden;
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
+.next-cue--cover {
+  color: rgba(31, 41, 51, 0.68);
+  text-shadow: none;
 }
 
-.usermotto {
-  margin-top: 200px;
+.next-title {
+  font-size: 22rpx;
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
-.avatar-wrapper {
-  padding: 0;
-  width: 56px !important;
-  border-radius: 8px;
-  margin-top: 40px;
-  margin-bottom: 40px;
+.next-arrow {
+  margin-top: 4rpx;
+  font-size: 34rpx;
+  line-height: 1;
 }
 
-.avatar {
-  display: block;
-  width: 56px;
-  height: 56px;
+.memory-screen,
+.guest-screen {
+  background: #ffffff;
 }
 
-.nickname-wrapper {
+.prelude-screen {
+  background: #ffffff;
+}
+
+.prelude-inner {
   display: flex;
-  width: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-  border-top: .5px solid rgba(0, 0, 0, 0.1);
-  border-bottom: .5px solid rgba(0, 0, 0, 0.1);
-  color: black;
+  flex-direction: column;
+  align-items: center;
 }
 
-.nickname-label {
-  width: 105px;
-}
-
-.nickname-input {
+.prelude-content {
+  display: flex;
   flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.prelude-heading {
+  margin-bottom: 36rpx;
+}
+
+.prelude-title {
+  display: block;
+  margin-top: 0;
+}
+
+.prelude-image {
+  width: 76%;
+  height: auto;
+  display: block;
+}
+
+.prelude-screen .screen-decoration {
+  z-index: 2;
+}
+
+.prelude-screen .screen-decoration--bottom-left {
+  width: 157rpx;
+}
+
+.detail-screen {
+  background: #ffffff;
+}
+
+.detail-top-space {
+  height: 10vh;
+  background: #ffffff;
+}
+
+.detail-poster {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.detail-screen .screen-decoration {
+  z-index: 1;
+}
+
+.detail-screen .screen-decoration--bottom-left {
+  width: 157rpx;
+}
+
+.section-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.section-top-space {
+  flex: 0 0 10vh;
+  height: 10vh;
+  background: #ffffff;
+}
+
+.section-kicker {
+  color: #766b65;
+  font-family: "STSong", "Songti SC", SimSun, serif;
+  font-size: 20rpx;
+  line-height: 1.2;
+  letter-spacing: 4rpx;
+}
+
+.section-title {
+  margin-top: 16rpx;
+  color: #1f2933;
+  font-size: 42rpx;
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+/* Match the serif, vermilion typography used for “时间” on the cover. */
+.memory-heading .section-title {
+  color: #8c1f20;
+  font-family: "STSong", "Songti SC", SimSun, serif;
+  font-size: 60rpx;
+  font-weight: 700;
+}
+
+.guest-screen .section-title {
+  color: #6f4d45;
+  font-size: 60rpx;
+  font-weight: 700;
+}
+
+.guest-screen,
+.guest-screen button,
+.guest-screen input,
+.guest-screen .picker-display {
+  font-family: "STSong", "Songti SC", SimSun, serif;
+}
+
+.memory-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+.memory-carousel {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin-top: 24rpx;
+}
+
+.memory-slide {
+  box-sizing: border-box;
+  padding: 0 28rpx;
+}
+
+.memory-card {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18rpx 18rpx 28rpx;
+  box-sizing: border-box;
+  background: #ffffff;
+  box-shadow: 0 22rpx 52rpx rgba(72, 54, 49, 0.16);
+}
+
+.memory-image-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 54%;
+  min-height: 0;
+  max-height: 600rpx;
+  overflow: hidden;
+  background: #ffffff;
+  border: 0;
+}
+
+.memory-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.memory-copy {
+  position: relative;
+  margin: 0;
+  padding: 26rpx 10rpx 4rpx;
+  border-left: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+
+.memory-title {
+  display: block;
+  margin-top: 14rpx;
+  color: #3e302d;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 36rpx;
+  font-weight: 500;
+  line-height: 1.28;
+}
+
+.memory-text {
+  display: block;
+  margin-top: 14rpx;
+  color: #6b5954;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 26rpx;
+  line-height: 1.72;
+}
+
+.memory-progress {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12rpx;
+  height: 52rpx;
+  margin-top: 14rpx;
+}
+
+.progress-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(121, 88, 79, 0.22);
+  transition: width 180ms ease, background 180ms ease;
+}
+
+.progress-dot--active {
+  width: 30rpx;
+  background: #7d5a52;
+}
+
+.detail-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.detail-heading {
+  margin-bottom: 54rpx;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 48rpx;
+  border-bottom: 1rpx solid rgba(126, 96, 87, 0.2);
+}
+
+.date-number {
+  color: #66423b;
+  font-family: "STSong", "Songti SC", SimSun, serif;
+  font-size: 104rpx;
+  line-height: 0.98;
+}
+
+.date-year {
+  margin-top: 18rpx;
+  color: #7a655f;
+  font-size: 26rpx;
+  line-height: 1.4;
+}
+
+.detail-list {
+  margin-top: 46rpx;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid rgba(126, 96, 87, 0.14);
+}
+
+.detail-label {
+  flex: 0 0 118rpx;
+  color: #9a7d74;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.detail-value {
+  color: #3e302d;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.detail-subvalue {
+  display: block;
+  margin-top: 4rpx;
+  color: #6b5954;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.location-copy {
+  flex: 1;
+}
+
+.map-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  min-height: 92rpx;
+  margin-top: 46rpx;
+  border: 1rpx solid rgba(103, 71, 62, 0.22);
+  border-radius: 8rpx;
+  background: #6f4d45;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.map-button--hover {
+  opacity: 0.86;
+  transform: scale(0.99);
+}
+
+.detail-map-button {
+  position: absolute;
+  left: 50%;
+  top: calc(1162rpx + 10vh);
+  z-index: 2;
+  min-width: 180rpx;
+  min-height: 66rpx;
+  margin-top: 0;
+  padding: 0 28rpx;
+  border-radius: 999rpx;
+  font-size: 25rpx;
+  transform: translateX(-50%);
+}
+
+.detail-map-button.map-button--hover {
+  transform: translateX(-50%) scale(0.99);
+}
+
+.map-icon {
+  position: relative;
+  width: 28rpx;
+  height: 28rpx;
+  border: 3rpx solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-sizing: border-box;
+}
+
+.map-icon-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  transform: translate(-50%, -50%);
+}
+
+.guest-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(64rpx + env(safe-area-inset-bottom));
+}
+
+.guest-inner .section-top-space {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.form-panel {
+  margin-top: 56rpx;
+  padding: 8rpx 0 0;
+}
+
+.field-group {
+  margin-bottom: 34rpx;
+}
+
+.field-label {
+  display: block;
+  margin-bottom: 14rpx;
+  color: #6c5751;
+  font-size: 25rpx;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.field-input,
+.picker-display {
+  width: 100%;
+  min-height: 92rpx;
+  padding: 0 28rpx;
+  box-sizing: border-box;
+  border: 1rpx solid rgba(129, 96, 87, 0.2);
+  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.88);
+  color: #3e302d;
+  font-size: 30rpx;
+  line-height: 92rpx;
+  text-align: left;
+}
+
+.field-placeholder {
+  color: #b5a29c;
+}
+
+.guest-picker {
+  display: block;
+}
+
+.picker-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-arrow {
+  color: #a68a81;
+  font-size: 32rpx;
+}
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 96rpx;
+  margin-top: 42rpx;
+  border-radius: 8rpx;
+  background: #6f4d45;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.submit-button--hover {
+  opacity: 0.86;
+  transform: scale(0.99);
+}
+
+.guest-note {
+  display: block;
+  margin-top: 34rpx;
+  color: #8a746d;
+  font-size: 24rpx;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.letter-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+  padding: 48rpx;
+  box-sizing: border-box;
+  background: rgba(53, 37, 34, 0.42);
+}
+
+.letter-dialog {
+  width: 100%;
+  max-height: 78vh;
+  padding: 52rpx 42rpx 42rpx;
+  box-sizing: border-box;
+  border: 1rpx solid rgba(168, 132, 120, 0.24);
+  border-radius: 8rpx;
+  background: #ffffff;
+  box-shadow: 0 34rpx 86rpx rgba(49, 30, 26, 0.22);
+  text-align: center;
+}
+
+.letter-kicker {
+  display: block;
+  color: #a3877e;
+  font-family: "STSong", "Songti SC", SimSun, serif;
+  font-size: 20rpx;
+  line-height: 1.2;
+  letter-spacing: 3rpx;
+}
+
+.letter-title {
+  display: block;
+  margin-top: 18rpx;
+  color: #3e302d;
+  font-size: 34rpx;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.letter-body {
+  display: block;
+  margin-top: 34rpx;
+  color: #6b5954;
+  font-size: 28rpx;
+  line-height: 1.78;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.letter-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 86rpx;
+  margin-top: 42rpx;
+  border-radius: 8rpx;
+  background: #6f4d45;
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+.letter-button--hover {
+  opacity: 0.86;
+}
+
+@media (max-height: 700px) {
+  .screen-inner {
+    padding-top: 0;
+    padding-bottom: calc(106rpx + env(safe-area-inset-bottom));
+  }
+
+  .section-title {
+    margin-top: 10rpx;
+    font-size: 36rpx;
+  }
+
+  .memory-carousel {
+    margin-top: 26rpx;
+  }
+
+  .memory-card {
+    justify-content: center;
+  }
+
+  .memory-image-frame {
+    height: 48%;
+    min-height: 0;
+    max-height: 420rpx;
+  }
+
+  .memory-copy {
+    margin: 0;
+    padding: 20rpx 8rpx 2rpx;
+  }
+
+  .memory-title {
+    font-size: 32rpx;
+  }
+
+  .memory-text {
+    font-size: 24rpx;
+    line-height: 1.62;
+  }
+
+  .detail-heading {
+    margin-bottom: 34rpx;
+  }
+
+  .date-number {
+    font-size: 88rpx;
+  }
+
+  .detail-row {
+    padding: 18rpx 0;
+  }
+
+  .form-panel {
+    margin-top: 36rpx;
+  }
+
+  .field-group {
+    margin-bottom: 24rpx;
+  }
 }

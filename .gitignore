@@ -12,3 +12,6 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+
+# Raw Source Han Serif distribution (2 GB+); it is not used at runtime.
+miniprogram/assets/source-han-serif-1.001R/

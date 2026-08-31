@@ -1,27 +1,212 @@
-<!--index.wxml-->
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="userinfo">
-      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
-        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
-        </button>
-        <view class="nickname-wrapper">
-          <text class="nickname-label">昵称</text>
-          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
+<swiper
+  class="invitation-swiper"
+  vertical="{{true}}"
+  duration="{{520}}"
+  current="{{currentSection}}"
+  disable-touch="{{sectionSwipeDisabled}}"
+  bindchange="onSectionChange"
+>
+  <swiper-item>
+    <view class="screen cover-screen">
+      <scroll-view
+        class="cover-scroll"
+        scroll-y="{{true}}"
+        enhanced="{{true}}"
+        show-scrollbar="{{false}}"
+        bindscroll="onCoverScroll"
+        bindscrolltolower="onCoverScrollToLower"
+        bindtouchstart="onCoverTouchStart"
+        bindtouchend="onCoverTouchEnd"
+      >
+        <view class="cover-content">
+          <view class="cover-top-space"></view>
+          <image class="cover-image" src="/assets/wedding_inv_landing.png" mode="widthFix" bindload="onCoverImageLoad"></image>
         </view>
-      </block>
-      <block wx:elif="{{!hasUserInfo}}">
-        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-        <view wx:else> 请使用2.10.4及以上版本基础库 </view>
-      </block>
-      <block wx:else>
-        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-      </block>
+      </scroll-view>
+      </view>
+  </swiper-item>
+
+  <swiper-item>
+    <view class="screen prelude-screen">
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
+      <view class="screen-inner prelude-inner">
+        <view class="section-top-space"></view>
+        <view class="prelude-content">
+          <view class="section-heading memory-heading prelude-heading">
+            <text class="section-title prelude-title">婚礼之前，</text>
+            <text class="section-title prelude-title">我们想让你知道...</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="next-cue">
+        <text class="next-title">我们的八年</text>
+        <text class="next-arrow">⌄</text>
+      </view>
     </view>
-    <view class="usermotto">
-      <text class="user-motto">{{motto}}</text>
+  </swiper-item>
+
+  <swiper-item>
+    <view class="screen memory-screen">
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2.png" mode="widthFix"></image>
+      <view class="screen-inner memory-inner">
+        <view class="section-top-space"></view>
+        <view class="section-heading memory-heading">
+          <text class="section-title">我们的八年</text>
+        </view>
+
+        <swiper
+          class="memory-carousel"
+          current="{{currentMemory}}"
+          duration="{{420}}"
+          circular="{{true}}"
+          easing-function="easeInOutCubic"
+          bindchange="onMemoryChange"
+        >
+          <block wx:for="{{memories}}" wx:key="id">
+            <swiper-item class="memory-slide">
+              <view class="memory-card">
+                <view class="memory-image-frame">
+                  <image class="memory-image" src="{{item.image}}" mode="aspectFit"></image>
+                </view>
+                <view class="memory-copy">
+                  <text class="memory-title">{{item.title}}</text>
+                  <text class="memory-text">{{item.text}}</text>
+                </view>
+              </view>
+            </swiper-item>
+          </block>
+        </swiper>
+
+        <view class="memory-progress">
+          <block wx:for="{{memoryDots}}" wx:key="id">
+            <view class="progress-dot {{item.active ? 'progress-dot--active' : ''}}"></view>
+          </block>
+        </view>
+      </view>
+
+      <view class="next-cue">
+        <text class="next-title">婚礼详情</text>
+        <text class="next-arrow">⌄</text>
+      </view>
     </view>
+  </swiper-item>
+
+  <swiper-item>
+    <view class="screen detail-screen">
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
+      <view class="detail-top-space"></view>
+      <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix"></image>
+      <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
+        <view class="map-icon">
+          <view class="map-icon-dot"></view>
+        </view>
+        <text>导航</text>
+      </button>
+
+      <view wx:if="{{false}}" class="screen-inner detail-inner">
+        <view class="section-top-space"></view>
+        <view class="section-heading detail-heading">
+          <text class="section-title">婚礼详情</text>
+        </view>
+
+        <view class="date-block">
+          <text class="date-number">11.15</text>
+          <text class="date-year">2026年 · 星期日</text>
+        </view>
+
+        <view class="detail-list">
+          <view class="detail-row">
+            <text class="detail-label">日期</text>
+            <text class="detail-value">2026年11月15日 星期日</text>
+          </view>
+          <view class="detail-row">
+            <text class="detail-label">时间</text>
+            <text class="detail-value">上午10:30 迎宾</text>
+          </view>
+          <view class="detail-row detail-row--location">
+            <text class="detail-label">地点</text>
+            <view class="location-copy">
+              <text class="detail-value">天津市东凯悦酒店</text>
+              <text class="detail-subvalue">二楼宴会厅1</text>
+            </view>
+          </view>
+        </view>
+
+        <button class="map-button" hover-class="map-button--hover" bindtap="openMap">
+          <view class="map-icon">
+            <view class="map-icon-dot"></view>
+          </view>
+          <text>导航详情</text>
+        </button>
+      </view>
+
+      <view class="next-cue">
+        <text class="next-title">等你来</text>
+        <text class="next-arrow">⌄</text>
+      </view>
+    </view>
+  </swiper-item>
+
+  <swiper-item>
+    <view class="screen guest-screen">
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2.png" mode="widthFix"></image>
+      <view class="screen-inner guest-inner">
+        <view class="section-top-space"></view>
+        <view class="section-heading">
+          <text class="section-title">等你来</text>
+        </view>
+
+        <view class="form-panel">
+          <view class="field-group">
+            <text class="field-label">姓名</text>
+            <input
+              class="field-input"
+              value="{{guestName}}"
+              placeholder="请输入您的姓名"
+              placeholder-class="field-placeholder"
+              maxlength="18"
+              bindinput="onGuestNameInput"
+            />
+          </view>
+
+          <view class="field-group">
+            <text class="field-label">宾客数量</text>
+            <picker
+              class="guest-picker"
+              mode="selector"
+              range="{{guestCountOptions}}"
+              value="{{guestCountIndex}}"
+              bindchange="onGuestCountChange"
+            >
+              <view class="picker-display">
+                <text>{{selectedGuestCount}}</text>
+                <text class="picker-arrow">⌄</text>
+              </view>
+            </picker>
+          </view>
+
+          <button class="submit-button" hover-class="submit-button--hover" bindtap="submitGuestInfo">
+            提交信息
+          </button>
+        </view>
+
+      </view>
+    </view>
+  </swiper-item>
+</swiper>
+
+<view wx:if="{{showLetterModal}}" class="letter-mask" bindtap="closeLetterModal">
+  <view class="letter-dialog" catchtap="noop">
+    <text class="letter-kicker">A LETTER FOR YOU</text>
+    <text class="letter-title">新郎 / 新娘写给你的一封信</text>
+    <text class="letter-body">{{activeLetter}}</text>
+    <button class="letter-button" hover-class="letter-button--hover" bindtap="closeLetterModal">
+      收下这封信
+    </button>
   </view>
-</scroll-view>
+</view>
