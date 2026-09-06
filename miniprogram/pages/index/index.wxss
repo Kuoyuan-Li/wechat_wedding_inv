@@ -229,7 +229,6 @@ button::after {
   z-index: 1;
   width: 100%;
   background: #ffffff;
-  box-shadow: 0 22rpx 52rpx rgba(72, 54, 49, 0.12);
 }
 
 .detail-poster {
