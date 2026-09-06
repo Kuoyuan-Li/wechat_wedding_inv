@@ -9,6 +9,8 @@ const chineseNamePattern = /^[\u3400-\u4dbf\u4e00-\u9fff]{2,4}$/u
 const allowedGuestCounts = new Set(['无法赴约', '1', '2', '3', '4', '5', '更多'])
 
 exports.main = async (event) => {
+  const wxContext = cloud.getWXContext()
+  const submitterOpenId = wxContext.OPENID || ''
   const guestName = typeof event.guestName === 'string'
     ? event.guestName.trim().replace(/\s+/g, '')
     : ''
@@ -28,11 +30,17 @@ exports.main = async (event) => {
     }
   }
 
-  await db.collection('rsvps').add({
+  const recordId = submitterOpenId
+    ? `openid_${submitterOpenId}`
+    : `guest_${Buffer.from(guestName).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')}`
+
+  await db.collection('rsvps').doc(recordId).set({
     data: {
       guestName,
       guestCount,
+      submitterOpenId,
       submittedAt: db.serverDate(),
+      updatedAt: db.serverDate(),
     },
   })
 

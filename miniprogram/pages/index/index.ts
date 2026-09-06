@@ -222,6 +222,7 @@ Component({
     guestCountOptions,
     guestCountIndex: 0,
     selectedGuestCount: guestCountOptions[0],
+    submitting: false,
     showLetterModal: false,
     activeLetter: null as GuestLetter | null,
     letterStage: 'closed',
@@ -392,7 +393,14 @@ Component({
         return
       }
 
-      // 测试信件动画时临时跳过云函数调用，恢复正式提交时取消下面注释。
+      if (this.data.submitting) {
+        return
+      }
+
+      this.setData({
+        submitting: true,
+      })
+
       try {
         const submitResult = await wx.cloud.callFunction({
           name: 'submitRsvp',
@@ -421,6 +429,10 @@ Component({
           confirmText: '我知道了',
         })
         return
+      } finally {
+        this.setData({
+          submitting: false,
+        })
       }
 
       if (!guestName) {

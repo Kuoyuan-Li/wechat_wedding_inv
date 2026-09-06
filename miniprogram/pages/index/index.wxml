@@ -121,48 +121,13 @@
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="detail-top-space"></view>
-      <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix"></image>
-      <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
-        <view class="map-icon">
-          <view class="map-icon-dot"></view>
-        </view>
-        <text>导航</text>
-      </button>
-
-      <view wx:if="{{false}}" class="screen-inner detail-inner">
-        <view class="section-top-space"></view>
-        <view class="section-heading detail-heading">
-          <text class="section-title">婚礼详情</text>
-        </view>
-
-        <view class="date-block">
-          <text class="date-number">11.15</text>
-          <text class="date-year">2026年 · 星期日</text>
-        </view>
-
-        <view class="detail-list">
-          <view class="detail-row">
-            <text class="detail-label">日期</text>
-            <text class="detail-value">2026年11月15日 星期日</text>
-          </view>
-          <view class="detail-row">
-            <text class="detail-label">时间</text>
-            <text class="detail-value">上午10:30 迎宾</text>
-          </view>
-          <view class="detail-row detail-row--location">
-            <text class="detail-label">地点</text>
-            <view class="location-copy">
-              <text class="detail-value">天津市东凯悦酒店</text>
-              <text class="detail-subvalue">二楼宴会厅1</text>
-            </view>
-          </view>
-        </view>
-
-        <button class="map-button" hover-class="map-button--hover" bindtap="openMap">
+      <view class="detail-poster-shell">
+        <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix"></image>
+        <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
           <view class="map-icon">
             <view class="map-icon-dot"></view>
           </view>
-          <text>导航详情</text>
+          <text>导航</text>
         </button>
       </view>
 
@@ -212,8 +177,14 @@
             </picker>
           </view>
 
-          <button class="submit-button" hover-class="submit-button--hover" bindtap="submitGuestInfo">
-            提交信息
+          <button
+            class="submit-button"
+            hover-class="submit-button--hover"
+            disabled="{{submitting}}"
+            loading="{{submitting}}"
+            bindtap="submitGuestInfo"
+          >
+            {{submitting ? '提交中...' : '提交信息'}}
           </button>
         </view>
 
