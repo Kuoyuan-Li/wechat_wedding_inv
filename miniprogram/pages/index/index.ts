@@ -121,7 +121,7 @@ const venue = {
   longitude: 117.247868,
 }
 
-const coverTopSpaceRatio = 0.1
+const posterTopSpaceRatio = 0.1
 const guestCountOptions = ['请选择宾客数量', '无法赴约', '1', '2', '3', '4', '5', '更多']
 
 function buildMemoryDots(activeIndex: number): MemoryDot[] {
@@ -131,8 +131,8 @@ function buildMemoryDots(activeIndex: number): MemoryDot[] {
   }))
 }
 
-function shouldDisableSectionSwipe(currentSection: number, coverAtBottom: boolean) {
-  return currentSection === 0 && !coverAtBottom
+function shouldDisableSectionSwipe(currentSection: number, coverAtBottom: boolean, detailAtBottom: boolean) {
+  return (currentSection === 0 && !coverAtBottom) || (currentSection === 3 && !detailAtBottom)
 }
 
 function normalizeGuestName(name: string) {
@@ -213,6 +213,8 @@ Component({
     coverAtBottom: false,
     coverTouchStartY: 0,
     coverViewportHeight: 0,
+    detailAtBottom: false,
+    detailTouchStartY: 0,
     sectionSwipeDisabled: true,
     currentMemory: 0,
     coverImage,
@@ -270,7 +272,11 @@ Component({
 
       this.setData({
         currentSection,
-        sectionSwipeDisabled: shouldDisableSectionSwipe(currentSection, this.data.coverAtBottom),
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          currentSection,
+          this.data.coverAtBottom,
+          this.data.detailAtBottom,
+        ),
       })
     },
 
@@ -283,13 +289,17 @@ Component({
 
       const systemInfo = wx.getSystemInfoSync()
       const renderedHeight = (height / width) * systemInfo.windowWidth
-      const contentHeight = renderedHeight + systemInfo.windowHeight * coverTopSpaceRatio
+      const contentHeight = renderedHeight + systemInfo.windowHeight * posterTopSpaceRatio
 
       const coverAtBottom = contentHeight <= this.data.coverViewportHeight + 2
 
       this.setData({
         coverAtBottom,
-        sectionSwipeDisabled: shouldDisableSectionSwipe(this.data.currentSection, coverAtBottom),
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          this.data.currentSection,
+          coverAtBottom,
+          this.data.detailAtBottom,
+        ),
       })
     },
 
@@ -306,7 +316,11 @@ Component({
 
       this.setData({
         coverAtBottom,
-        sectionSwipeDisabled: shouldDisableSectionSwipe(this.data.currentSection, coverAtBottom),
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          this.data.currentSection,
+          coverAtBottom,
+          this.data.detailAtBottom,
+        ),
       })
     },
 
@@ -341,6 +355,85 @@ Component({
       if (this.data.coverAtBottom && swipeDistance < -44) {
         this.setData({
           currentSection: 1,
+          sectionSwipeDisabled: false,
+        })
+      }
+    },
+
+    onDetailImageLoad(event: CoverImageLoadEvent) {
+      const { width, height } = event.detail
+
+      if (!width || !height || !this.data.coverViewportHeight) {
+        return
+      }
+
+      const systemInfo = wx.getSystemInfoSync()
+      const renderedHeight = (height / width) * systemInfo.windowWidth
+      const contentHeight = renderedHeight + systemInfo.windowHeight * posterTopSpaceRatio
+
+      const detailAtBottom = contentHeight <= this.data.coverViewportHeight + 2
+
+      this.setData({
+        detailAtBottom,
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          this.data.currentSection,
+          this.data.coverAtBottom,
+          detailAtBottom,
+        ),
+      })
+    },
+
+    onDetailScroll(event: CoverScrollEvent) {
+      const { scrollTop, scrollHeight } = event.detail
+
+      if (!scrollHeight || !this.data.coverViewportHeight) {
+        return
+      }
+
+      const maxScrollTop = Math.max(scrollHeight - this.data.coverViewportHeight, 0)
+      const detailAtBottom = scrollTop >= maxScrollTop - 12
+
+      this.setData({
+        detailAtBottom,
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          this.data.currentSection,
+          this.data.coverAtBottom,
+          detailAtBottom,
+        ),
+      })
+    },
+
+    onDetailScrollToLower() {
+      this.setData({
+        detailAtBottom: true,
+        sectionSwipeDisabled: false,
+      })
+    },
+
+    onDetailTouchStart(event: WechatMiniprogram.TouchEvent) {
+      const touch = event.touches[0]
+
+      if (!touch) {
+        return
+      }
+
+      this.setData({
+        detailTouchStartY: touch.clientY,
+      })
+    },
+
+    onDetailTouchEnd(event: WechatMiniprogram.TouchEvent) {
+      const touch = event.changedTouches[0]
+
+      if (!touch) {
+        return
+      }
+
+      const swipeDistance = touch.clientY - this.data.detailTouchStartY
+
+      if (this.data.detailAtBottom && swipeDistance < -44) {
+        this.setData({
+          currentSection: 4,
           sectionSwipeDisabled: false,
         })
       }

@@ -120,18 +120,31 @@
     <view class="screen detail-screen">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
-      <view class="detail-top-space"></view>
-      <view class="detail-poster-shell">
-        <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix"></image>
-        <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
-          <view class="map-icon">
-            <view class="map-icon-dot"></view>
+      <scroll-view
+        class="detail-scroll"
+        scroll-y="{{true}}"
+        enhanced="{{true}}"
+        show-scrollbar="{{false}}"
+        bindscroll="onDetailScroll"
+        bindscrolltolower="onDetailScrollToLower"
+        bindtouchstart="onDetailTouchStart"
+        bindtouchend="onDetailTouchEnd"
+      >
+        <view class="detail-content">
+          <view class="detail-top-space"></view>
+          <view class="detail-poster-shell">
+            <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix" bindload="onDetailImageLoad"></image>
+            <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
+              <view class="map-icon">
+                <view class="map-icon-dot"></view>
+              </view>
+              <text>导航</text>
+            </button>
           </view>
-          <text>导航</text>
-        </button>
-      </view>
+        </view>
+      </scroll-view>
 
-      <view class="next-cue">
+      <view wx:if="{{detailAtBottom}}" class="next-cue">
         <text class="next-title">等你来</text>
         <text class="next-arrow">⌄</text>
       </view>
