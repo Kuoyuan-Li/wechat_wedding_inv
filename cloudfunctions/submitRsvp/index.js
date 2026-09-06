@@ -6,7 +6,7 @@ cloud.init({
 
 const db = cloud.database()
 const chineseNamePattern = /^[\u3400-\u4dbf\u4e00-\u9fff]{2,4}$/u
-const allowedGuestCounts = new Set(['1', '2', '3', '4', '5', '更多'])
+const allowedGuestCounts = new Set(['无法赴约', '1', '2', '3', '4', '5', '更多'])
 
 exports.main = async (event) => {
   const guestName = typeof event.guestName === 'string'

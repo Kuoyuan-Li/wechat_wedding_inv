@@ -1,4 +1,12 @@
 /**app.wxss**/
+page,
+button,
+input,
+textarea,
+picker {
+  font-family: "WeddingSerifRegular", "Source Han Serif SC", "STSong", "Songti SC", SimSun, serif;
+}
+
 .container {
   height: 100%;
   display: flex;

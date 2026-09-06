@@ -1,4 +1,26 @@
+<view wx:if="{{!assetsReady}}" class="loading-screen">
+  <view class="loading-panel">
+    <text class="loading-title">正在准备邀请函</text>
+    <view class="loading-spinner"></view>
+  </view>
+</view>
+
+<view wx:if="{{imageUrlsReady && !assetsReady}}" class="image-preloader" aria-hidden="true">
+  <block wx:for="{{preloadImages}}" wx:key="id">
+    <image
+      class="image-preloader-item"
+      src="{{item.src}}"
+      data-key="{{item.id}}"
+      data-src="{{item.src}}"
+      mode="widthFix"
+      bindload="onPreloadImageComplete"
+      binderror="onPreloadImageComplete"
+    ></image>
+  </block>
+</view>
+
 <swiper
+  wx:if="{{assetsReady}}"
   class="invitation-swiper"
   vertical="{{true}}"
   duration="{{520}}"
@@ -20,7 +42,7 @@
       >
         <view class="cover-content">
           <view class="cover-top-space"></view>
-          <image class="cover-image" src="/assets/wedding_inv_landing.png" mode="widthFix" bindload="onCoverImageLoad"></image>
+          <image class="cover-image" src="{{coverImage}}" data-src="{{coverImage}}" mode="widthFix" bindload="onCoverImageLoad" binderror="onCloudImageError"></image>
         </view>
       </scroll-view>
       </view>
@@ -49,8 +71,8 @@
 
   <swiper-item>
     <view class="screen memory-screen">
-      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1.png" mode="widthFix"></image>
-      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner memory-inner">
         <view class="section-top-space"></view>
         <view class="section-heading memory-heading">
@@ -69,7 +91,7 @@
             <swiper-item class="memory-slide">
               <view class="memory-card">
                 <view class="memory-image-frame">
-                  <image class="memory-image" src="{{item.image}}" mode="aspectFit"></image>
+                  <image class="memory-image" src="{{item.image}}" data-src="{{item.image}}" mode="aspectFit" binderror="onCloudImageError"></image>
                 </view>
                 <view class="memory-copy">
                   <text class="memory-title">{{item.title}}</text>
@@ -153,8 +175,8 @@
 
   <swiper-item>
     <view class="screen guest-screen">
-      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1.png" mode="widthFix"></image>
-      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner guest-inner">
         <view class="section-top-space"></view>
         <view class="section-heading">
@@ -183,7 +205,7 @@
               value="{{guestCountIndex}}"
               bindchange="onGuestCountChange"
             >
-              <view class="picker-display">
+              <view class="picker-display {{guestCountIndex === 0 ? 'picker-display--placeholder' : ''}}">
                 <text>{{selectedGuestCount}}</text>
                 <text class="picker-arrow">⌄</text>
               </view>
@@ -201,12 +223,29 @@
 </swiper>
 
 <view wx:if="{{showLetterModal}}" class="letter-mask" bindtap="closeLetterModal">
-  <view class="letter-dialog" catchtap="noop">
-    <text class="letter-kicker">A LETTER FOR YOU</text>
-    <text class="letter-title">新郎 / 新娘写给你的一封信</text>
-    <text class="letter-body">{{activeLetter}}</text>
-    <button class="letter-button" hover-class="letter-button--hover" bindtap="closeLetterModal">
-      收下这封信
-    </button>
+  <view class="letter-scene letter-stage--{{letterStage}}" catchtap="noop">
+    <view wx:if="{{letterStage !== 'open'}}" class="envelope-wrap">
+      <view class="envelope">
+        <view class="envelope-back"></view>
+        <view class="envelope-flap"></view>
+        <view class="envelope-front envelope-front--left"></view>
+        <view class="envelope-front envelope-front--right"></view>
+        <view class="envelope-front envelope-front--bottom"></view>
+        <view class="envelope-seal"></view>
+      </view>
+    </view>
+
+    <view wx:if="{{letterStage === 'open'}}" class="letter-paper">
+      <text class="letter-title">给你的一封信</text>
+      <text class="letter-body">{{activeLetter.text}}</text>
+      <block wx:if="{{activeLetter.images.length}}">
+        <block wx:for="{{activeLetter.images}}" wx:key="*this">
+          <image class="letter-image" src="{{item}}" mode="widthFix"></image>
+        </block>
+      </block>
+      <button class="letter-button" hover-class="letter-button--hover" bindtap="closeLetterModal">
+        收下这封信
+      </button>
+    </view>
   </view>
 </view>
