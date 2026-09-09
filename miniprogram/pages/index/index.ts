@@ -61,7 +61,7 @@ const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8g
 const shareTitle = '诚邀您参加我们的婚礼'
 const sharePath = '/pages/index/index'
 const shareImageUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/share_img_1000.jpg'
-const musicReadyPlaybackSeconds = 1.2
+const musicReadyPlaybackSeconds = 0.5
 const musicReplayDelayMs = 3000
 
 const weddingPhotos: WeddingPhoto[] = Array.from({ length: 12 }, (_, index) => {
