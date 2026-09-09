@@ -61,6 +61,8 @@ const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8g
 const shareTitle = '诚邀您参加我们的婚礼'
 const sharePath = '/pages/index/index'
 const shareImageUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/share_img_1000.jpg'
+const musicReadyPlaybackSeconds = 1.2
+const musicReplayDelayMs = 3000
 
 const weddingPhotos: WeddingPhoto[] = Array.from({ length: 12 }, (_, index) => {
   const photoNumber = index + 1
@@ -165,6 +167,10 @@ function shouldDisableSectionSwipe(currentSection: number, coverAtBottom: boolea
   return (currentSection === 0 && !coverAtBottom) || (currentSection === 4 && !detailAtBottom)
 }
 
+function areInvitationAssetsReady(loadedImageCount: number, totalImageCount: number) {
+  return loadedImageCount >= totalImageCount
+}
+
 function normalizeGuestName(name: string) {
   return name.trim().replace(/\s+/g, '')
 }
@@ -232,8 +238,8 @@ let letterAnimationToken = 0
 let loadedAssetKeys = new Set<string>()
 let sectionTransitionTimer: number | undefined
 let backgroundAudio: WechatMiniprogram.BackgroundAudioManager | null = null
-let musicReadyFallbackTimer: number | undefined
 let musicResumeTimer: number | undefined
+let musicReplayTimer: number | undefined
 
 function clearSectionTransitionTimer() {
   if (sectionTransitionTimer) {
@@ -241,21 +247,23 @@ function clearSectionTransitionTimer() {
   }
 }
 
-function clearMusicReadyFallbackTimer() {
-  if (musicReadyFallbackTimer) {
-    clearTimeout(musicReadyFallbackTimer)
-  }
-}
-
 function clearMusicResumeTimer() {
   if (musicResumeTimer) {
     clearTimeout(musicResumeTimer)
+    musicResumeTimer = undefined
+  }
+}
+
+function clearMusicReplayTimer() {
+  if (musicReplayTimer) {
+    clearTimeout(musicReplayTimer)
+    musicReplayTimer = undefined
   }
 }
 
 function stopBackgroundMusic() {
-  clearMusicReadyFallbackTimer()
   clearMusicResumeTimer()
+  clearMusicReplayTimer()
 
   if (!backgroundAudio) {
     return
@@ -370,14 +378,9 @@ Component({
         return
       }
 
-      if (this.data.musicReady && !backgroundAudio.paused) {
-        this.setData({
-          isMusicPlaying: true,
-        })
-        return
+      if (backgroundAudio.paused) {
+        backgroundAudio.play()
       }
-
-      backgroundAudio.play()
     },
 
     hide() {
@@ -393,18 +396,17 @@ Component({
 
       const audio = wx.getBackgroundAudioManager()
       backgroundAudio = audio
+      let musicEnded = false
 
       const markMusicReady = () => {
-        clearMusicReadyFallbackTimer()
-
         this.setData({
           musicReady: true,
           isMusicPlaying: !this.data.musicMuted && !audio.paused,
-          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
         })
       }
 
       audio.onPlay(() => {
+        musicEnded = false
         this.setData({
           isMusicPlaying: false,
           musicMuted: false,
@@ -412,7 +414,7 @@ Component({
       })
 
       audio.onTimeUpdate(() => {
-        if (audio.currentTime <= 0) {
+        if (audio.currentTime < musicReadyPlaybackSeconds) {
           return
         }
 
@@ -435,7 +437,7 @@ Component({
 
         clearMusicResumeTimer()
 
-        if (this.data.musicMuted) {
+        if (this.data.musicMuted || musicEnded) {
           return
         }
 
@@ -456,31 +458,35 @@ Component({
 
       audio.onError((error) => {
         console.warn('背景音乐播放失败，请确认 backgroundMusicUrl 指向有效 mp3 文件', error)
-        clearMusicReadyFallbackTimer()
         this.setData({
           isMusicPlaying: false,
-          musicReady: true,
-          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
+          musicReady: false,
         })
       })
 
       audio.onEnded(() => {
+        clearMusicReplayTimer()
+        musicEnded = true
+
         if (this.data.musicMuted) {
           return
         }
 
-        audio.seek(0)
-        audio.play()
-      })
-
-      musicReadyFallbackTimer = setTimeout(() => {
-        console.warn('背景音乐加载较慢或被系统限制自动播放，已放行首页展示')
         this.setData({
-          musicReady: true,
           isMusicPlaying: false,
-          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
         })
-      }, 6500)
+
+        musicReplayTimer = setTimeout(() => {
+          musicReplayTimer = undefined
+
+          if (backgroundAudio !== audio || this.data.musicMuted) {
+            return
+          }
+
+          backgroundAudio.seek(0)
+          backgroundAudio.play()
+        }, musicReplayDelayMs)
+      })
 
       void resolveCloudImageUrls([backgroundMusicUrl]).then((fileUrlByID) => {
         if (backgroundAudio !== audio) {
@@ -508,6 +514,7 @@ Component({
       }
 
       if (this.data.musicMuted || !this.data.isMusicPlaying) {
+        clearMusicReplayTimer()
         backgroundAudio.play()
         this.setData({
           musicMuted: false,
@@ -521,6 +528,7 @@ Component({
         isMusicPlaying: false,
       })
       clearMusicResumeTimer()
+      clearMusicReplayTimer()
       backgroundAudio.pause()
     },
 
@@ -976,7 +984,7 @@ Component({
       this.setData({
         loadedImageCount,
         loadingProgress,
-        assetsReady: loadedImageCount >= totalImageCount && this.data.musicReady,
+        assetsReady: areInvitationAssetsReady(loadedImageCount, totalImageCount),
       })
     },
 
