@@ -90,6 +90,13 @@ App<IAppOption>({
     }
   },
   onHide() {
+    if (getApp<IAppOption>().globalData.preserveMusicOnHide) {
+      return
+    }
+
     wx.getBackgroundAudioManager().stop()
+  },
+  onShow() {
+    getApp<IAppOption>().globalData.preserveMusicOnHide = false
   },
 })

@@ -286,6 +286,10 @@ function stopBackgroundMusic() {
   backgroundAudio = null
 }
 
+function preserveMusicOnHide() {
+  getApp<IAppOption>().globalData.preserveMusicOnHide = true
+}
+
 Component({
   data: {
     currentSection: 0,
@@ -544,6 +548,8 @@ Component({
     },
 
     onShareAppMessage() {
+      preserveMusicOnHide()
+
       const shareContent: ShareAppMessage = {
         title: shareTitle,
         path: sharePath,
@@ -557,6 +563,8 @@ Component({
     },
 
     onShareTimeline() {
+      preserveMusicOnHide()
+
       const shareContent: ShareTimeline = {
         title: shareTitle,
         query: '',
@@ -821,6 +829,8 @@ Component({
     previewWeddingPhoto(event: WechatMiniprogram.TouchEvent) {
       const current = String(event.currentTarget.dataset.src || '')
       const urls = this.data.weddingPhotos.map((photo) => photo.image)
+
+      preserveMusicOnHide()
 
       wx.previewImage({
         current: current || urls[this.data.currentWeddingPhoto],
