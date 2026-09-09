@@ -57,7 +57,7 @@ type CloudTempFileURLResult = {
 }
 
 const coverImage = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/wedding_inv_landing.jpg'
-const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/ready_to_love.mp3'
+const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/ready_to_love_trimmed.mp3'
 const shareTitle = '诚邀您参加我们的婚礼'
 const sharePath = '/pages/index/index'
 const shareImageUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/share_img_1000.jpg'
