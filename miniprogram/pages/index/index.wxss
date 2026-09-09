@@ -93,7 +93,7 @@ button::after {
 .music-toggle {
   position: fixed;
   left: 50rpx;
-  top: calc(88rpx + env(safe-area-inset-top));
+  top: calc(50rpx + env(safe-area-inset-top));
   z-index: 30;
   display: flex;
   align-items: center;

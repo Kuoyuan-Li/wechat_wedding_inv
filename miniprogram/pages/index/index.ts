@@ -232,6 +232,7 @@ let letterAnimationToken = 0
 let loadedAssetKeys = new Set<string>()
 let sectionTransitionTimer: number | undefined
 let backgroundAudio: WechatMiniprogram.InnerAudioContext | null = null
+let musicReadyFallbackTimer: number | undefined
 
 function clearSectionTransitionTimer() {
   if (sectionTransitionTimer) {
@@ -239,7 +240,15 @@ function clearSectionTransitionTimer() {
   }
 }
 
+function clearMusicReadyFallbackTimer() {
+  if (musicReadyFallbackTimer) {
+    clearTimeout(musicReadyFallbackTimer)
+  }
+}
+
 function stopBackgroundMusic() {
+  clearMusicReadyFallbackTimer()
+
   if (!backgroundAudio) {
     return
   }
@@ -258,6 +267,7 @@ Component({
     sectionTransitioning: false,
     musicMuted: false,
     isMusicPlaying: false,
+    musicReady: false,
     assetsReady: false,
     imageUrlsReady: false,
     loadingProgress: 0,
@@ -358,11 +368,29 @@ Component({
       audio.autoplay = true
       audio.obeyMuteSwitch = false
 
+      const markMusicReady = () => {
+        clearMusicReadyFallbackTimer()
+
+        this.setData({
+          musicReady: true,
+          isMusicPlaying: !this.data.musicMuted,
+          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
+        })
+      }
+
       audio.onPlay(() => {
         this.setData({
           isMusicPlaying: true,
           musicMuted: false,
         })
+      })
+
+      audio.onTimeUpdate(() => {
+        if (this.data.musicReady || audio.currentTime <= 0) {
+          return
+        }
+
+        markMusicReady()
       })
 
       audio.onPause(() => {
@@ -379,10 +407,22 @@ Component({
 
       audio.onError((error) => {
         console.warn('背景音乐播放失败，请确认 backgroundMusicUrl 指向有效 mp3 文件', error)
+        clearMusicReadyFallbackTimer()
         this.setData({
           isMusicPlaying: false,
+          musicReady: true,
+          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
         })
       })
+
+      musicReadyFallbackTimer = setTimeout(() => {
+        console.warn('背景音乐加载较慢或被系统限制自动播放，已放行首页展示')
+        this.setData({
+          musicReady: true,
+          isMusicPlaying: false,
+          assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
+        })
+      }, 6500)
 
       void resolveCloudImageUrls([backgroundMusicUrl]).then((fileUrlByID) => {
         if (backgroundAudio !== audio) {
@@ -873,7 +913,7 @@ Component({
       this.setData({
         loadedImageCount,
         loadingProgress,
-        assetsReady: loadedImageCount >= totalImageCount,
+        assetsReady: loadedImageCount >= totalImageCount && this.data.musicReady,
       })
     },
 
