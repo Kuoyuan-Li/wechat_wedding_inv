@@ -8,6 +8,9 @@
     "navigationBarBackgroundColor": "#ffffff"
   },
   "style": "v2",
+  "requiredBackgroundModes": [
+    "audio"
+  ],
   "componentFramework": "glass-easel",
   "lazyCodeLoading": "requiredComponents"
 }

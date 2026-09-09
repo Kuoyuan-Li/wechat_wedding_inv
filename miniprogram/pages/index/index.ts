@@ -231,8 +231,9 @@ function findGuestLetter(name: string): GuestLetter | null {
 let letterAnimationToken = 0
 let loadedAssetKeys = new Set<string>()
 let sectionTransitionTimer: number | undefined
-let backgroundAudio: WechatMiniprogram.InnerAudioContext | null = null
+let backgroundAudio: WechatMiniprogram.BackgroundAudioManager | null = null
 let musicReadyFallbackTimer: number | undefined
+let musicResumeTimer: number | undefined
 
 function clearSectionTransitionTimer() {
   if (sectionTransitionTimer) {
@@ -246,15 +247,21 @@ function clearMusicReadyFallbackTimer() {
   }
 }
 
+function clearMusicResumeTimer() {
+  if (musicResumeTimer) {
+    clearTimeout(musicResumeTimer)
+  }
+}
+
 function stopBackgroundMusic() {
   clearMusicReadyFallbackTimer()
+  clearMusicResumeTimer()
 
   if (!backgroundAudio) {
     return
   }
 
   backgroundAudio.stop()
-  backgroundAudio.destroy()
   backgroundAudio = null
 }
 
@@ -357,46 +364,88 @@ Component({
     },
   },
 
+  pageLifetimes: {
+    show() {
+      if (!backgroundAudio || this.data.musicMuted) {
+        return
+      }
+
+      if (this.data.musicReady && !backgroundAudio.paused) {
+        this.setData({
+          isMusicPlaying: true,
+        })
+        return
+      }
+
+      backgroundAudio.play()
+    },
+
+    hide() {
+      this.setData({
+        isMusicPlaying: false,
+      })
+    },
+  },
+
   methods: {
     initBackgroundMusic() {
       stopBackgroundMusic()
 
-      const audio = wx.createInnerAudioContext()
+      const audio = wx.getBackgroundAudioManager()
       backgroundAudio = audio
-      audio.loop = true
-      audio.volume = 0.4
-      audio.autoplay = true
-      audio.obeyMuteSwitch = false
 
       const markMusicReady = () => {
         clearMusicReadyFallbackTimer()
 
         this.setData({
           musicReady: true,
-          isMusicPlaying: !this.data.musicMuted,
+          isMusicPlaying: !this.data.musicMuted && !audio.paused,
           assetsReady: this.data.loadedImageCount >= this.data.totalImageCount,
         })
       }
 
       audio.onPlay(() => {
         this.setData({
-          isMusicPlaying: true,
+          isMusicPlaying: false,
           musicMuted: false,
         })
       })
 
       audio.onTimeUpdate(() => {
-        if (this.data.musicReady || audio.currentTime <= 0) {
+        if (audio.currentTime <= 0) {
           return
         }
 
-        markMusicReady()
+        if (!this.data.musicReady) {
+          markMusicReady()
+          return
+        }
+
+        if (!this.data.isMusicPlaying && !this.data.musicMuted) {
+          this.setData({
+            isMusicPlaying: true,
+          })
+        }
       })
 
       audio.onPause(() => {
         this.setData({
           isMusicPlaying: false,
         })
+
+        clearMusicResumeTimer()
+
+        if (this.data.musicMuted) {
+          return
+        }
+
+        musicResumeTimer = setTimeout(() => {
+          if (!backgroundAudio || this.data.musicMuted) {
+            return
+          }
+
+          backgroundAudio.play()
+        }, 420)
       })
 
       audio.onStop(() => {
@@ -415,6 +464,15 @@ Component({
         })
       })
 
+      audio.onEnded(() => {
+        if (this.data.musicMuted) {
+          return
+        }
+
+        audio.seek(0)
+        audio.play()
+      })
+
       musicReadyFallbackTimer = setTimeout(() => {
         console.warn('背景音乐加载较慢或被系统限制自动播放，已放行首页展示')
         this.setData({
@@ -429,6 +487,11 @@ Component({
           return
         }
 
+        audio.title = shareTitle
+        audio.epname = '婚礼邀请函'
+        audio.singer = 'Wedding Invitation'
+        audio.coverImgUrl = shareImageUrl
+        audio.webUrl = sharePath
         audio.src = fileUrlByID[backgroundMusicUrl] || backgroundMusicUrl
         if (this.data.musicMuted) {
           return
@@ -445,20 +508,20 @@ Component({
       }
 
       if (this.data.musicMuted || !this.data.isMusicPlaying) {
-        backgroundAudio.volume = 0.4
         backgroundAudio.play()
         this.setData({
           musicMuted: false,
-          isMusicPlaying: true,
+          isMusicPlaying: false,
         })
         return
       }
 
-      backgroundAudio.pause()
       this.setData({
         musicMuted: true,
         isMusicPlaying: false,
       })
+      clearMusicResumeTimer()
+      backgroundAudio.pause()
     },
 
     onShareAppMessage() {
