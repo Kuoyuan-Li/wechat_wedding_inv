@@ -40,6 +40,11 @@ type PreloadImageEvent = WechatMiniprogram.CustomEvent<{
   errMsg?: string
 }>
 
+type SectionTransitionEvent = WechatMiniprogram.CustomEvent<{
+  dx: number
+  dy: number
+}>
+
 type CloudTempFile = {
   fileID: string
   tempFileURL: string
@@ -52,6 +57,10 @@ type CloudTempFileURLResult = {
 }
 
 const coverImage = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/wedding_inv_landing.jpg'
+const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/ready_to_love.mp3'
+const shareTitle = '诚邀您参加我们的婚礼'
+const sharePath = '/pages/index/index'
+const shareImageUrl = '/assets/share_img_compress.jpg'
 
 const weddingPhotos: WeddingPhoto[] = Array.from({ length: 12 }, (_, index) => {
   const photoNumber = index + 1
@@ -221,10 +230,34 @@ function findGuestLetter(name: string): GuestLetter | null {
 
 let letterAnimationToken = 0
 let loadedAssetKeys = new Set<string>()
+let sectionTransitionTimer: number | undefined
+let backgroundAudio: WechatMiniprogram.InnerAudioContext | null = null
+
+function clearSectionTransitionTimer() {
+  if (sectionTransitionTimer) {
+    clearTimeout(sectionTransitionTimer)
+  }
+}
+
+function stopBackgroundMusic() {
+  if (!backgroundAudio) {
+    return
+  }
+
+  backgroundAudio.stop()
+  backgroundAudio.destroy()
+  backgroundAudio = null
+}
 
 Component({
   data: {
     currentSection: 0,
+    previousSection: -1,
+    previewSection: -1,
+    sectionDirection: 'down',
+    sectionTransitioning: false,
+    musicMuted: false,
+    isMusicPlaying: false,
     assetsReady: false,
     imageUrlsReady: false,
     loadingProgress: 0,
@@ -261,6 +294,13 @@ Component({
       this.setData({
         coverViewportHeight: systemInfo.windowHeight,
       })
+
+      wx.showShareMenu({
+        withShareTicket: true,
+        menus: ['shareAppMessage', 'shareTimeline'],
+      })
+
+      this.initBackgroundMusic()
 
       const cloudImageFileIDs = [
         coverImage,
@@ -301,20 +341,187 @@ Component({
         })
       })
     },
+
+    detached() {
+      stopBackgroundMusic()
+    },
   },
 
   methods: {
+    initBackgroundMusic() {
+      stopBackgroundMusic()
+
+      const audio = wx.createInnerAudioContext()
+      backgroundAudio = audio
+      audio.loop = true
+      audio.volume = 1
+      audio.autoplay = true
+      audio.obeyMuteSwitch = false
+
+      audio.onPlay(() => {
+        this.setData({
+          isMusicPlaying: true,
+          musicMuted: false,
+        })
+      })
+
+      audio.onPause(() => {
+        this.setData({
+          isMusicPlaying: false,
+        })
+      })
+
+      audio.onStop(() => {
+        this.setData({
+          isMusicPlaying: false,
+        })
+      })
+
+      audio.onError((error) => {
+        console.warn('背景音乐播放失败，请确认 backgroundMusicUrl 指向有效 mp3 文件', error)
+        this.setData({
+          isMusicPlaying: false,
+        })
+      })
+
+      void resolveCloudImageUrls([backgroundMusicUrl]).then((fileUrlByID) => {
+        if (backgroundAudio !== audio) {
+          return
+        }
+
+        audio.src = fileUrlByID[backgroundMusicUrl] || backgroundMusicUrl
+        if (this.data.musicMuted) {
+          return
+        }
+
+        audio.play()
+      })
+    },
+
+    toggleBackgroundMusic() {
+      if (!backgroundAudio) {
+        this.initBackgroundMusic()
+        return
+      }
+
+      if (this.data.musicMuted || !this.data.isMusicPlaying) {
+        backgroundAudio.volume = 1
+        backgroundAudio.play()
+        this.setData({
+          musicMuted: false,
+          isMusicPlaying: true,
+        })
+        return
+      }
+
+      backgroundAudio.pause()
+      this.setData({
+        musicMuted: true,
+        isMusicPlaying: false,
+      })
+    },
+
+    onShareAppMessage() {
+      return {
+        title: shareTitle,
+        path: sharePath,
+        imageUrl: shareImageUrl,
+      }
+    },
+
+    onShareTimeline() {
+      return {
+        title: shareTitle,
+        imageUrl: shareImageUrl,
+        query: '',
+      }
+    },
+
+    setSectionWithMotion(targetSection: number) {
+      const previousSection = this.data.currentSection
+      const sectionDirection = targetSection >= previousSection ? 'down' : 'up'
+
+      clearSectionTransitionTimer()
+
+      this.setData({
+        currentSection: targetSection,
+        previousSection,
+        previewSection: -1,
+        sectionDirection,
+        sectionTransitioning: true,
+        sectionSwipeDisabled: shouldDisableSectionSwipe(
+          targetSection,
+          this.data.coverAtBottom,
+          this.data.detailAtBottom,
+        ),
+      })
+
+      sectionTransitionTimer = setTimeout(() => {
+        this.setData({
+          sectionTransitioning: false,
+          previousSection: -1,
+        })
+      }, 1300)
+    },
+
+    onSectionTransition(event: SectionTransitionEvent) {
+      const { dy } = event.detail
+      const currentSection = this.data.currentSection
+      const isDraggingToNext = dy < -12
+      const isDraggingToPrevious = dy > 12
+      const previewSection = isDraggingToNext
+        ? currentSection + 1
+        : isDraggingToPrevious
+          ? currentSection - 1
+          : -1
+      const boundedPreviewSection = previewSection >= 1 && previewSection <= 5
+        ? previewSection
+        : -1
+
+      if (boundedPreviewSection === this.data.previewSection) {
+        return
+      }
+
+      this.setData({
+        previewSection: boundedPreviewSection,
+        sectionDirection: isDraggingToPrevious ? 'up' : 'down',
+      })
+    },
+
     onSectionChange(event: WechatMiniprogram.SwiperChange) {
       const currentSection = event.detail.current
 
+      if (currentSection === this.data.currentSection) {
+        this.setData({
+          previewSection: -1,
+        })
+        return
+      }
+
+      const previousSection = this.data.currentSection
+      const sectionDirection = currentSection >= previousSection ? 'down' : 'up'
+
+      clearSectionTransitionTimer()
+
       this.setData({
         currentSection,
+        previousSection,
+        previewSection: -1,
+        sectionDirection,
+        sectionTransitioning: true,
         sectionSwipeDisabled: shouldDisableSectionSwipe(
           currentSection,
           this.data.coverAtBottom,
           this.data.detailAtBottom,
         ),
       })
+
+      sectionTransitionTimer = setTimeout(() => {
+        this.setData({
+          sectionTransitioning: false,
+          previousSection: -1,
+        })
+      }, 1300)
     },
 
     onCoverImageLoad(event: CoverImageLoadEvent) {
@@ -390,10 +597,7 @@ Component({
       const swipeDistance = touch.clientY - this.data.coverTouchStartY
 
       if (this.data.coverAtBottom && swipeDistance < -44) {
-        this.setData({
-          currentSection: 1,
-          sectionSwipeDisabled: false,
-        })
+        this.setSectionWithMotion(1)
       }
     },
 
@@ -469,10 +673,7 @@ Component({
       const swipeDistance = touch.clientY - this.data.detailTouchStartY
 
       if (this.data.detailAtBottom && swipeDistance < -44) {
-        this.setData({
-          currentSection: 5,
-          sectionSwipeDisabled: false,
-        })
+        this.setSectionWithMotion(5)
       }
     },
 

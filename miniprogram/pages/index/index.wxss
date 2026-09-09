@@ -90,6 +90,89 @@ button::after {
   height: 1px;
 }
 
+.music-toggle {
+  position: fixed;
+  left: 50rpx;
+  top: calc(88rpx + env(safe-area-inset-top));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 88rpx;
+  min-width: 88rpx;
+  min-height: 88rpx;
+  padding: 0;
+  overflow: visible;
+  box-sizing: border-box;
+  transform-origin: center;
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.music-disc {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  min-width: 72rpx;
+  min-height: 72rpx;
+  border: 1rpx solid rgba(140, 31, 32, 0.18);
+  border-radius: 999rpx;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.96) 0 18%, rgba(140, 31, 32, 0.16) 19% 22%, transparent 23%),
+    repeating-radial-gradient(circle at center, rgba(140, 31, 32, 0.12) 0 2rpx, rgba(255, 255, 255, 0.78) 3rpx 8rpx);
+  box-shadow: 0 12rpx 30rpx rgba(72, 54, 49, 0.12);
+  color: #8c1f20;
+  backdrop-filter: blur(10rpx);
+  box-sizing: border-box;
+  transform-origin: center;
+  transition: background 240ms ease;
+}
+
+.music-toggle--hover {
+  opacity: 0.78;
+  transform: scale(0.96);
+}
+
+.music-toggle--muted {
+  opacity: 0.62;
+}
+
+.music-toggle--muted .music-disc::after {
+  position: absolute;
+  left: 17rpx;
+  top: 35rpx;
+  width: 38rpx;
+  height: 3rpx;
+  border-radius: 999rpx;
+  background: #8c1f20;
+  content: "";
+  transform: rotate(-42deg);
+}
+
+.music-note {
+  display: block;
+  font-size: 38rpx;
+  line-height: 1;
+  transform-origin: center;
+}
+
+.music-toggle--playing .music-disc {
+  animation: music-disc-spin 2400ms linear infinite;
+}
+
+.music-toggle--playing.music-toggle--muted .music-disc {
+  animation: none;
+}
+
+@keyframes music-disc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .screen {
   position: relative;
   overflow: hidden;
@@ -147,6 +230,22 @@ button::after {
   display: block;
 }
 
+.cover-motion .cover-image {
+  animation: cover-image-fade-in 1180ms cubic-bezier(0.2, 0.86, 0.24, 1) 120ms both;
+}
+
+@keyframes cover-image-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(22rpx) scale(1.012);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .next-cue {
   position: absolute;
   left: 50%;
@@ -175,6 +274,115 @@ button::after {
   margin-top: 4rpx;
   font-size: 34rpx;
   line-height: 1;
+}
+
+.section-motion .screen-decoration--top-right,
+.section-motion .screen-decoration--bottom-left,
+.section-motion .wedding-photo-title-image,
+.section-motion .wedding-photo-carousel,
+.section-motion .wedding-photo-progress,
+.section-motion .prelude-title,
+.section-motion .memory-heading,
+.section-motion .memory-carousel,
+.section-motion .memory-progress,
+.section-motion .detail-fade-motion,
+.section-motion .guest-heading-motion,
+.section-motion .guest-form-motion,
+.section-motion .section-cue-motion {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.section-motion--active .screen-decoration--top-right {
+  animation: section-deco-top-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 80ms both;
+}
+
+.section-motion--active .screen-decoration--bottom-left {
+  animation: section-deco-bottom-enter 980ms cubic-bezier(0.22, 0.84, 0.2, 1) 620ms both;
+}
+
+.section-motion--exit .screen-decoration,
+.section-motion--exit .wedding-photo-heading,
+.section-motion--exit .wedding-photo-title-image,
+.section-motion--exit .wedding-photo-carousel,
+.section-motion--exit .wedding-photo-progress,
+.section-motion--exit .prelude-content,
+.section-motion--exit .prelude-title,
+.section-motion--exit .memory-heading,
+.section-motion--exit .memory-carousel,
+.section-motion--exit .memory-progress,
+.section-motion--exit .detail-poster,
+.section-motion--exit .guest-heading-motion,
+.section-motion--exit .guest-form-motion,
+.section-motion--exit .section-cue-motion {
+  animation: section-layer-exit 720ms cubic-bezier(0.42, 0, 0.18, 1) both;
+}
+
+.section-motion--exit .detail-map-button {
+  animation: detail-button-exit 720ms cubic-bezier(0.42, 0, 0.18, 1) both;
+}
+
+.section-motion--active .section-cue-motion {
+  animation: section-cue-enter 820ms ease 1180ms both, next-cue-breathe 2000ms ease-in-out 2100ms infinite;
+}
+
+@keyframes section-deco-top-enter {
+  from {
+    opacity: 0;
+    transform: translateY(22rpx) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes section-deco-bottom-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28rpx) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes section-layer-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-42rpx) scale(0.99);
+  }
+}
+
+@keyframes section-cue-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 18rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes next-cue-breathe {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+
+  50% {
+    transform: translate(-50%, 8rpx);
+  }
 }
 
 .memory-screen,
@@ -274,6 +482,50 @@ button::after {
   display: block;
 }
 
+.section-motion--active .detail-poster {
+  animation: detail-poster-enter 1080ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+}
+
+.section-motion--active .detail-map-button {
+  animation: detail-button-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 760ms both;
+}
+
+@keyframes detail-poster-enter {
+  from {
+    opacity: 0;
+    transform: translateY(42rpx) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes detail-button-enter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(28rpx) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes detail-button-exit {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-42rpx) scale(0.99);
+  }
+}
+
 .section-heading {
   display: flex;
   flex-direction: column;
@@ -340,7 +592,6 @@ button::after {
   gap: 20rpx;
   width: 100%;
   text-align: center;
-  animation: wedding-title-rise 820ms ease both;
 }
 
 .wedding-photo-title {
@@ -367,9 +618,8 @@ button::after {
 
 .wedding-photo-title-image {
   display: block;
-  width: 330rpx;
+  width: 400rpx;
   height: auto;
-  animation: wedding-title-slide-left 760ms ease 80ms both;
 }
 
 .wedding-photo-title-line--secondary {
@@ -384,8 +634,7 @@ button::after {
   height: 68vh;
   max-height: 960rpx;
   min-height: 0;
-  margin-top: 30rpx;
-  animation: wedding-photo-reveal 920ms ease 360ms both;
+  margin-top: 18rpx;
 }
 
 .wedding-photo-slide {
@@ -416,54 +665,75 @@ button::after {
 .wedding-photo-progress {
   height: 42rpx;
   margin-top: 16rpx;
-  animation: wedding-photo-reveal 920ms ease 520ms both;
 }
 
-@keyframes wedding-title-rise {
-  from {
-    opacity: 0;
-    transform: translateY(28rpx);
-  }
+.section-motion--active .wedding-photo-title-image {
+  animation: wedding-title-slide-left 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+}
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.section-motion--active .wedding-photo-carousel {
+  animation: wedding-photo-reveal 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+}
+
+.section-motion--active .wedding-photo-progress {
+  animation: wedding-photo-progress-enter 760ms ease 760ms both;
+}
+
+.wedding-photo-slide .wedding-photo-image {
+  transform: scale(0.985);
+  transition: transform 520ms cubic-bezier(0.2, 0.86, 0.24, 1), box-shadow 520ms ease;
+}
+
+.wedding-photo-slide--active .wedding-photo-image {
+  transform: scale(1);
+  box-shadow: 0 18rpx 46rpx rgba(72, 54, 49, 0.18);
 }
 
 @keyframes wedding-title-slide-left {
   from {
     opacity: 0;
-    transform: translateX(-34rpx);
+    transform: translateY(30rpx) scale(0.985);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes wedding-title-slide-right {
   from {
     opacity: 0;
-    transform: translateX(34rpx);
+    transform: translateY(30rpx) scale(0.985);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes wedding-photo-reveal {
   from {
     opacity: 0;
-    transform: translateY(32rpx) scale(0.985);
+    transform: translateY(46rpx) scale(0.975);
   }
 
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wedding-photo-progress-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -481,6 +751,38 @@ button::after {
 
 .memory-screen .screen-decoration {
   z-index: 0;
+}
+
+.section-motion--active .prelude-title:first-child {
+  animation: prelude-line-enter 980ms cubic-bezier(0.22, 0.84, 0.2, 1) 220ms both;
+}
+
+.section-motion--active .prelude-title:last-child {
+  animation: prelude-line-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 480ms both;
+}
+
+@keyframes prelude-line-enter {
+  from {
+    opacity: 0;
+    transform: translateY(38rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-motion--active .memory-heading {
+  animation: memory-title-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+}
+
+.section-motion--active .memory-carousel {
+  animation: memory-carousel-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+}
+
+.section-motion--active .memory-progress {
+  animation: memory-progress-enter 760ms ease 780ms both;
 }
 
 .memory-carousel {
@@ -505,6 +807,13 @@ button::after {
   box-sizing: border-box;
   background: #ffffff;
   box-shadow: 0 22rpx 52rpx rgba(72, 54, 49, 0.16);
+  transform: scale(0.965);
+  transition: transform 520ms cubic-bezier(0.2, 0.86, 0.24, 1), box-shadow 520ms ease;
+}
+
+.memory-slide--active .memory-card {
+  transform: scale(1);
+  box-shadow: 0 28rpx 64rpx rgba(72, 54, 49, 0.2);
 }
 
 .memory-image-frame {
@@ -539,7 +848,7 @@ button::after {
 .memory-title {
   display: block;
   margin-top: 14rpx;
-  color: #3e302d;
+  color: #8c1f20;
   font-family: "WeddingSerifSemiBold", "WeddingSerifRegular", "Source Han Serif SC", "STSong", "Songti SC", SimSun, serif;
   font-size: 36rpx;
   font-weight: normal;
@@ -549,7 +858,7 @@ button::after {
 .memory-text {
   display: block;
   margin-top: 14rpx;
-  color: #6b5954;
+  color: #3e302d;
   font-family: "WeddingSerifRegular", "Source Han Serif SC", "STSong", "Songti SC", SimSun, serif;
   font-size: 26rpx;
   line-height: 1.72;
@@ -575,6 +884,42 @@ button::after {
 .progress-dot--active {
   width: 30rpx;
   background: #7d5a52;
+}
+
+@keyframes memory-title-enter {
+  from {
+    opacity: 0;
+    transform: translateY(34rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes memory-carousel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(44rpx) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes memory-progress-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .map-button {
@@ -650,6 +995,38 @@ button::after {
   top: 0;
   left: 0;
   width: 100%;
+}
+
+.section-motion--active .guest-heading-motion {
+  animation: guest-title-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+}
+
+.section-motion--active .guest-form-motion {
+  animation: guest-form-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 560ms both;
+}
+
+@keyframes guest-title-enter {
+  from {
+    opacity: 0;
+    transform: translateY(38rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes guest-form-enter {
+  from {
+    opacity: 0;
+    transform: translateY(46rpx) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .form-panel {
@@ -995,7 +1372,7 @@ button::after {
 
   .wedding-photo-carousel {
     height: 62vh;
-    margin-top: 20rpx;
+    margin-top: 14rpx;
   }
 
   .form-panel {

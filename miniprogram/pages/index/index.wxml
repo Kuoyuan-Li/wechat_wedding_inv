@@ -19,17 +19,31 @@
   </block>
 </view>
 
+<view
+  wx:if="{{assetsReady}}"
+  class="music-toggle {{isMusicPlaying && !musicMuted ? 'music-toggle--playing' : ''}} {{musicMuted ? 'music-toggle--muted' : ''}}"
+  hover-class="music-toggle--hover"
+  aria-label="{{musicMuted ? '打开背景音乐' : '关闭背景音乐'}}"
+  bindtap="toggleBackgroundMusic"
+>
+  <view class="music-disc">
+    <text class="music-note">♪</text>
+  </view>
+</view>
+
 <swiper
   wx:if="{{assetsReady}}"
   class="invitation-swiper"
   vertical="{{true}}"
-  duration="{{520}}"
+  duration="{{760}}"
   current="{{currentSection}}"
   disable-touch="{{sectionSwipeDisabled}}"
+  easing-function="easeInOutCubic"
+  bindtransition="onSectionTransition"
   bindchange="onSectionChange"
 >
   <swiper-item>
-    <view class="screen cover-screen">
+    <view class="screen cover-screen cover-motion">
       <scroll-view
         class="cover-scroll"
         scroll-y="{{true}}"
@@ -49,7 +63,7 @@
   </swiper-item>
 
   <swiper-item>
-    <view class="screen wedding-photo-screen">
+    <view class="screen wedding-photo-screen section-motion section-motion--{{sectionDirection}} {{currentSection === 1 || previewSection === 1 ? 'section-motion--active' : ''}} {{previousSection === 1 && sectionTransitioning ? 'section-motion--exit' : ''}}">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner wedding-photo-inner">
@@ -70,7 +84,7 @@
           bindchange="onWeddingPhotoChange"
         >
           <block wx:for="{{weddingPhotos}}" wx:key="id">
-            <swiper-item class="wedding-photo-slide">
+            <swiper-item class="wedding-photo-slide {{index === currentWeddingPhoto ? 'wedding-photo-slide--active' : ''}}">
               <view class="wedding-photo-frame">
                 <image class="wedding-photo-image" src="{{item.image}}" data-src="{{item.image}}" mode="widthFix" bindtap="previewWeddingPhoto" binderror="onCloudImageError"></image>
               </view>
@@ -86,7 +100,7 @@
 
       </view>
 
-      <view class="next-cue">
+      <view class="next-cue section-cue-motion">
         <text class="next-title">婚礼之前</text>
         <text class="next-arrow">⌄</text>
       </view>
@@ -94,7 +108,7 @@
   </swiper-item>
 
   <swiper-item>
-    <view class="screen prelude-screen">
+    <view class="screen prelude-screen section-motion section-motion--{{sectionDirection}} {{currentSection === 2 || previewSection === 2 ? 'section-motion--active' : ''}} {{previousSection === 2 && sectionTransitioning ? 'section-motion--exit' : ''}}">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner prelude-inner">
@@ -107,7 +121,7 @@
         </view>
       </view>
 
-      <view class="next-cue">
+      <view class="next-cue section-cue-motion">
         <text class="next-title">我们的八年</text>
         <text class="next-arrow">⌄</text>
       </view>
@@ -115,7 +129,7 @@
   </swiper-item>
 
   <swiper-item>
-    <view class="screen memory-screen">
+    <view class="screen memory-screen section-motion section-motion--{{sectionDirection}} {{currentSection === 3 || previewSection === 3 ? 'section-motion--active' : ''}} {{previousSection === 3 && sectionTransitioning ? 'section-motion--exit' : ''}}">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner memory-inner">
@@ -134,7 +148,7 @@
           bindchange="onMemoryChange"
         >
           <block wx:for="{{memories}}" wx:key="id">
-            <swiper-item class="memory-slide">
+            <swiper-item class="memory-slide {{index === currentMemory ? 'memory-slide--active' : ''}}">
               <view class="memory-card">
                 <view class="memory-image-frame">
                   <image class="memory-image" src="{{item.image}}" data-src="{{item.image}}" mode="aspectFit" binderror="onCloudImageError"></image>
@@ -155,7 +169,7 @@
         </view>
       </view>
 
-      <view class="next-cue">
+      <view class="next-cue section-cue-motion">
         <text class="next-title">婚礼详情</text>
         <text class="next-arrow">⌄</text>
       </view>
@@ -163,7 +177,7 @@
   </swiper-item>
 
   <swiper-item>
-    <view class="screen detail-screen">
+    <view class="screen detail-screen section-motion section-motion--{{sectionDirection}} {{currentSection === 4 || previewSection === 4 ? 'section-motion--active' : ''}} {{previousSection === 4 && sectionTransitioning ? 'section-motion--exit' : ''}}">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <scroll-view
@@ -179,8 +193,8 @@
         <view class="detail-content">
           <view class="detail-top-space"></view>
           <view class="detail-poster-shell">
-            <image class="detail-poster" src="/assets/wedding_info_2.0.png" mode="widthFix" bindload="onDetailImageLoad"></image>
-            <button class="map-button detail-map-button" hover-class="map-button--hover" bindtap="openMap">
+            <image class="detail-poster detail-fade-motion" src="/assets/wedding_info_2.0.png" mode="widthFix" bindload="onDetailImageLoad"></image>
+            <button class="map-button detail-map-button detail-fade-motion" hover-class="map-button--hover" bindtap="openMap">
               <view class="map-icon">
                 <view class="map-icon-dot"></view>
               </view>
@@ -190,7 +204,7 @@
         </view>
       </scroll-view>
 
-      <view wx:if="{{detailAtBottom}}" class="next-cue">
+      <view wx:if="{{detailAtBottom}}" class="next-cue section-cue-motion">
         <text class="next-title">等你来</text>
         <text class="next-arrow">⌄</text>
       </view>
@@ -198,16 +212,16 @@
   </swiper-item>
 
   <swiper-item>
-    <view class="screen guest-screen">
+    <view class="screen guest-screen section-motion section-motion--{{sectionDirection}} {{currentSection === 5 || previewSection === 5 ? 'section-motion--active' : ''}} {{previousSection === 5 && sectionTransitioning ? 'section-motion--exit' : ''}}">
       <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
       <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
       <view class="screen-inner guest-inner">
         <view class="section-top-space"></view>
-        <view class="section-heading">
+        <view class="section-heading guest-heading-motion">
           <text class="section-title">等你来</text>
         </view>
 
-        <view class="form-panel">
+        <view class="form-panel guest-form-motion">
           <view class="field-group">
             <text class="field-label">姓名</text>
             <input
