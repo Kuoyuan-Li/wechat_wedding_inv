@@ -12,6 +12,11 @@ type MemoryDot = {
   active: boolean
 }
 
+type WeddingPhoto = {
+  id: string
+  image: string
+}
+
 type CoverScrollEvent = WechatMiniprogram.CustomEvent<{
   scrollTop: number
   scrollHeight: number
@@ -47,6 +52,15 @@ type CloudTempFileURLResult = {
 }
 
 const coverImage = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/wedding_inv_landing.jpg'
+
+const weddingPhotos: WeddingPhoto[] = Array.from({ length: 12 }, (_, index) => {
+  const photoNumber = index + 1
+
+  return {
+    id: `wedding-photo-${photoNumber}`,
+    image: `cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/hunsha/${photoNumber}.jpg`,
+  }
+})
 
 const memories: MemoryItem[] = [
   {
@@ -131,8 +145,15 @@ function buildMemoryDots(activeIndex: number): MemoryDot[] {
   }))
 }
 
+function buildWeddingPhotoDots(activeIndex: number): MemoryDot[] {
+  return weddingPhotos.map((photo, index) => ({
+    id: photo.id,
+    active: index === activeIndex,
+  }))
+}
+
 function shouldDisableSectionSwipe(currentSection: number, coverAtBottom: boolean, detailAtBottom: boolean) {
-  return (currentSection === 0 && !coverAtBottom) || (currentSection === 3 && !detailAtBottom)
+  return (currentSection === 0 && !coverAtBottom) || (currentSection === 4 && !detailAtBottom)
 }
 
 function normalizeGuestName(name: string) {
@@ -208,7 +229,7 @@ Component({
     imageUrlsReady: false,
     loadingProgress: 0,
     loadedImageCount: 0,
-    totalImageCount: memories.length + 1,
+    totalImageCount: memories.length + weddingPhotos.length + 1,
     preloadImages: [] as PreloadImage[],
     coverAtBottom: false,
     coverTouchStartY: 0,
@@ -217,7 +238,10 @@ Component({
     detailTouchStartY: 0,
     sectionSwipeDisabled: true,
     currentMemory: 0,
+    currentWeddingPhoto: 0,
     coverImage,
+    weddingPhotos,
+    weddingPhotoDots: buildWeddingPhotoDots(0),
     memories,
     memoryDots: buildMemoryDots(0),
     guestName: '',
@@ -238,21 +262,34 @@ Component({
         coverViewportHeight: systemInfo.windowHeight,
       })
 
-      const cloudImageFileIDs = [coverImage, ...memories.map((memory) => memory.image)]
+      const cloudImageFileIDs = [
+        coverImage,
+        ...weddingPhotos.map((photo) => photo.image),
+        ...memories.map((memory) => memory.image),
+      ]
 
       void resolveCloudImageUrls(cloudImageFileIDs).then((imageUrlByFileID) => {
         const resolvedCoverImage = imageUrlByFileID[coverImage] || coverImage
+        const resolvedWeddingPhotos = weddingPhotos.map((photo) => ({
+          ...photo,
+          image: imageUrlByFileID[photo.image] || photo.image,
+        }))
         const resolvedMemories = memories.map((memory) => ({
           ...memory,
           image: imageUrlByFileID[memory.image] || memory.image,
         }))
-        const imageUrls = [resolvedCoverImage, ...resolvedMemories.map((memory) => memory.image)]
+        const imageUrls = [
+          resolvedCoverImage,
+          ...resolvedWeddingPhotos.map((photo) => photo.image),
+          ...resolvedMemories.map((memory) => memory.image),
+        ]
         loadedAssetKeys = new Set<string>()
 
         this.setData({
           assetsReady: false,
           imageUrlsReady: true,
           coverImage: resolvedCoverImage,
+          weddingPhotos: resolvedWeddingPhotos,
           memories: resolvedMemories,
           preloadImages: imageUrls.map((imageUrl, index) => ({
             id: `asset-${index}`,
@@ -433,10 +470,29 @@ Component({
 
       if (this.data.detailAtBottom && swipeDistance < -44) {
         this.setData({
-          currentSection: 4,
+          currentSection: 5,
           sectionSwipeDisabled: false,
         })
       }
+    },
+
+    onWeddingPhotoChange(event: WechatMiniprogram.SwiperChange) {
+      const currentWeddingPhoto = event.detail.current
+
+      this.setData({
+        currentWeddingPhoto,
+        weddingPhotoDots: buildWeddingPhotoDots(currentWeddingPhoto),
+      })
+    },
+
+    previewWeddingPhoto(event: WechatMiniprogram.TouchEvent) {
+      const current = String(event.currentTarget.dataset.src || '')
+      const urls = this.data.weddingPhotos.map((photo) => photo.image)
+
+      wx.previewImage({
+        current: current || urls[this.data.currentWeddingPhoto],
+        urls,
+      })
     },
 
     onMemoryChange(event: WechatMiniprogram.SwiperChange) {
@@ -600,18 +656,11 @@ Component({
       })
     },
 
-    onPreloadImageComplete(event: PreloadImageEvent) {
+    onPreloadImageLoad(event: PreloadImageEvent) {
       const key = String(event.currentTarget.dataset.key || '')
 
       if (!key || loadedAssetKeys.has(key)) {
         return
-      }
-
-      if (event.type === 'error') {
-        console.warn('预加载图片失败，继续进入邀请函', {
-          src: event.currentTarget.dataset.src,
-          error: event.detail,
-        })
       }
 
       loadedAssetKeys.add(key)
@@ -624,6 +673,13 @@ Component({
         loadedImageCount,
         loadingProgress,
         assetsReady: loadedImageCount >= totalImageCount,
+      })
+    },
+
+    onPreloadImageError(event: PreloadImageEvent) {
+      console.warn('Preload image failed, waiting until the image can be loaded', {
+        src: event.currentTarget.dataset.src,
+        error: event.detail,
       })
     },
 

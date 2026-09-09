@@ -13,8 +13,8 @@
       data-key="{{item.id}}"
       data-src="{{item.src}}"
       mode="widthFix"
-      bindload="onPreloadImageComplete"
-      binderror="onPreloadImageComplete"
+      bindload="onPreloadImageLoad"
+      binderror="onPreloadImageError"
     ></image>
   </block>
 </view>
@@ -46,6 +46,51 @@
         </view>
       </scroll-view>
       </view>
+  </swiper-item>
+
+  <swiper-item>
+    <view class="screen wedding-photo-screen">
+      <image class="screen-decoration screen-decoration--top-right" src="/assets/decoration1_transparent.png" mode="widthFix"></image>
+      <image class="screen-decoration screen-decoration--bottom-left" src="/assets/decoration2_transparent.png" mode="widthFix"></image>
+      <view class="screen-inner wedding-photo-inner">
+        <view class="wedding-photo-heading">
+          <view class="wedding-photo-title">
+            <image class="wedding-photo-title-image" src="/assets/womenjiehunla.svg" mode="widthFix"></image>
+          </view>
+        </view>
+
+        <swiper
+          class="wedding-photo-carousel"
+          current="{{currentWeddingPhoto}}"
+          duration="{{460}}"
+          circular="{{true}}"
+          autoplay="{{true}}"
+          interval="{{5000}}"
+          easing-function="easeInOutCubic"
+          bindchange="onWeddingPhotoChange"
+        >
+          <block wx:for="{{weddingPhotos}}" wx:key="id">
+            <swiper-item class="wedding-photo-slide">
+              <view class="wedding-photo-frame">
+                <image class="wedding-photo-image" src="{{item.image}}" data-src="{{item.image}}" mode="widthFix" bindtap="previewWeddingPhoto" binderror="onCloudImageError"></image>
+              </view>
+            </swiper-item>
+          </block>
+        </swiper>
+
+        <view class="memory-progress wedding-photo-progress">
+          <block wx:for="{{weddingPhotoDots}}" wx:key="id">
+            <view class="progress-dot {{item.active ? 'progress-dot--active' : ''}}"></view>
+          </block>
+        </view>
+
+      </view>
+
+      <view class="next-cue">
+        <text class="next-title">婚礼之前</text>
+        <text class="next-arrow">⌄</text>
+      </view>
+    </view>
   </swiper-item>
 
   <swiper-item>
@@ -84,6 +129,7 @@
           current="{{currentMemory}}"
           duration="{{420}}"
           circular="{{true}}"
+          autoplay="{{false}}"
           easing-function="easeInOutCubic"
           bindchange="onMemoryChange"
         >
