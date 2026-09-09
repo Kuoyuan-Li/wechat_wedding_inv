@@ -382,12 +382,6 @@ Component({
         backgroundAudio.play()
       }
     },
-
-    hide() {
-      this.setData({
-        isMusicPlaying: false,
-      })
-    },
   },
 
   methods: {

@@ -89,4 +89,7 @@ App<IAppOption>({
       loadWeddingFonts()
     }
   },
+  onHide() {
+    wx.getBackgroundAudioManager().stop()
+  },
 })
