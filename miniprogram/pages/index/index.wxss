@@ -231,7 +231,7 @@ button::after {
 }
 
 .cover-motion .cover-image {
-  animation: cover-image-fade-in 1180ms cubic-bezier(0.2, 0.86, 0.24, 1) 120ms both;
+  animation: cover-image-fade-in 1980ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 @keyframes cover-image-fade-in {
