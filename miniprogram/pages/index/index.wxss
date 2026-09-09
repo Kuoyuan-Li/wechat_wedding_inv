@@ -231,7 +231,7 @@ button::after {
 }
 
 .cover-motion .cover-image {
-  animation: cover-image-fade-in 1980ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
+  animation: cover-image-fade-in 2480ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 @keyframes cover-image-fade-in {
@@ -294,11 +294,11 @@ button::after {
 }
 
 .section-motion--active .screen-decoration--top-right {
-  animation: section-deco-top-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 80ms both;
+  animation: section-deco-top-enter 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 .section-motion--active .screen-decoration--bottom-left {
-  animation: section-deco-bottom-enter 980ms cubic-bezier(0.22, 0.84, 0.2, 1) 620ms both;
+  animation: section-deco-bottom-enter 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 1200ms both;
 }
 
 .section-motion--exit .screen-decoration,
@@ -315,15 +315,15 @@ button::after {
 .section-motion--exit .guest-heading-motion,
 .section-motion--exit .guest-form-motion,
 .section-motion--exit .section-cue-motion {
-  animation: section-layer-exit 720ms cubic-bezier(0.42, 0, 0.18, 1) both;
+  animation: section-layer-exit 1600ms cubic-bezier(0.2, 0.86, 0.24, 1) both;
 }
 
 .section-motion--exit .detail-map-button {
-  animation: detail-button-exit 720ms cubic-bezier(0.42, 0, 0.18, 1) both;
+  animation: detail-button-exit 1600ms cubic-bezier(0.2, 0.86, 0.24, 1) both;
 }
 
 .section-motion--active .section-cue-motion {
-  animation: section-cue-enter 820ms ease 1180ms both, next-cue-breathe 2000ms ease-in-out 2100ms infinite;
+  animation: section-cue-enter 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 2600ms both, next-cue-breathe 2400ms ease-in-out 4600ms infinite;
 }
 
 @keyframes section-deco-top-enter {
@@ -483,11 +483,11 @@ button::after {
 }
 
 .section-motion--active .detail-poster {
-  animation: detail-poster-enter 1080ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+  animation: detail-poster-enter 2200ms cubic-bezier(0.2, 0.86, 0.24, 1) 700ms both;
 }
 
 .section-motion--active .detail-map-button {
-  animation: detail-button-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 760ms both;
+  animation: detail-button-enter 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 1500ms both;
 }
 
 @keyframes detail-poster-enter {
@@ -613,7 +613,7 @@ button::after {
 
 .wedding-photo-title-line--primary {
   font-size: 64rpx;
-  animation: wedding-title-slide-left 760ms ease 80ms both;
+  animation: wedding-title-slide-left 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 .wedding-photo-title-image {
@@ -625,7 +625,7 @@ button::after {
 .wedding-photo-title-line--secondary {
   margin-top: 10rpx;
   font-size: 42rpx;
-  animation: wedding-title-slide-right 760ms ease 220ms both;
+  animation: wedding-title-slide-right 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 900ms both;
 }
 
 .wedding-photo-carousel {
@@ -668,15 +668,15 @@ button::after {
 }
 
 .section-motion--active .wedding-photo-title-image {
-  animation: wedding-title-slide-left 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+  animation: wedding-title-slide-left 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 .section-motion--active .wedding-photo-carousel {
-  animation: wedding-photo-reveal 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+  animation: wedding-photo-reveal 2480ms cubic-bezier(0.2, 0.86, 0.24, 1) 1200ms both;
 }
 
 .section-motion--active .wedding-photo-progress {
-  animation: wedding-photo-progress-enter 760ms ease 760ms both;
+  animation: wedding-photo-progress-enter 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 3200ms both;
 }
 
 .wedding-photo-slide .wedding-photo-image {
@@ -754,11 +754,11 @@ button::after {
 }
 
 .section-motion--active .prelude-title:first-child {
-  animation: prelude-line-enter 980ms cubic-bezier(0.22, 0.84, 0.2, 1) 220ms both;
+  animation: prelude-line-enter 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 600ms both;
 }
 
 .section-motion--active .prelude-title:last-child {
-  animation: prelude-line-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 480ms both;
+  animation: prelude-line-enter 2200ms cubic-bezier(0.2, 0.86, 0.24, 1) 1200ms both;
 }
 
 @keyframes prelude-line-enter {
@@ -774,15 +774,15 @@ button::after {
 }
 
 .section-motion--active .memory-heading {
-  animation: memory-title-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+  animation: memory-title-enter 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 .section-motion--active .memory-carousel {
-  animation: memory-carousel-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 520ms both;
+  animation: memory-carousel-enter 2480ms cubic-bezier(0.2, 0.86, 0.24, 1) 1200ms both;
 }
 
 .section-motion--active .memory-progress {
-  animation: memory-progress-enter 760ms ease 780ms both;
+  animation: memory-progress-enter 1800ms cubic-bezier(0.2, 0.86, 0.24, 1) 3200ms both;
 }
 
 .memory-carousel {
@@ -998,11 +998,11 @@ button::after {
 }
 
 .section-motion--active .guest-heading-motion {
-  animation: guest-title-enter 920ms cubic-bezier(0.22, 0.84, 0.2, 1) 180ms both;
+  animation: guest-title-enter 2000ms cubic-bezier(0.2, 0.86, 0.24, 1) 500ms both;
 }
 
 .section-motion--active .guest-form-motion {
-  animation: guest-form-enter 1040ms cubic-bezier(0.22, 0.84, 0.2, 1) 560ms both;
+  animation: guest-form-enter 2480ms cubic-bezier(0.2, 0.86, 0.24, 1) 1200ms both;
 }
 
 @keyframes guest-title-enter {
