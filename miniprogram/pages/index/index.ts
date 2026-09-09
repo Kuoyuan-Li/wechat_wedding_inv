@@ -60,7 +60,7 @@ const coverImage = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aecef
 const backgroundMusicUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/ready_to_love.mp3'
 const shareTitle = '诚邀您参加我们的婚礼'
 const sharePath = '/pages/index/index'
-const shareImageUrl = '/assets/share_img_compress.jpg'
+const shareImageUrl = 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/share_img_1000.jpg'
 
 const weddingPhotos: WeddingPhoto[] = Array.from({ length: 12 }, (_, index) => {
   const photoNumber = index + 1
@@ -354,7 +354,7 @@ Component({
       const audio = wx.createInnerAudioContext()
       backgroundAudio = audio
       audio.loop = true
-      audio.volume = 1
+      audio.volume = 0.4
       audio.autoplay = true
       audio.obeyMuteSwitch = false
 
@@ -405,7 +405,7 @@ Component({
       }
 
       if (this.data.musicMuted || !this.data.isMusicPlaying) {
-        backgroundAudio.volume = 1
+        backgroundAudio.volume = 0.4
         backgroundAudio.play()
         this.setData({
           musicMuted: false,
