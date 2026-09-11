@@ -132,7 +132,7 @@ const memories: MemoryItem[] = [
     id: 'certificate',
     image: 'cloud://cloud1-d1gek8gnz6aeceff4.636c-cloud1-d1gek8gnz6aeceff4-1478552519/assets/certificate.jpg',
     title: '继续写下去',
-    text: '2026年9月15日，我们在珠海领证，成为法律意义上的夫妻。故事并没有在这一天抵达终点，它只是换了一种更郑重的方式，继续向前。',
+    text: '2025年9月15日，我们在珠海领证，成为法律意义上的夫妻。故事并没有在这一天抵达终点，它只是换了一种更郑重的方式，继续向前。',
   },
 ]
 
